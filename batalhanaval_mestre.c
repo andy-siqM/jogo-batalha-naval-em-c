@@ -103,6 +103,8 @@ int main(void) {
     int linhaV = 2, colunaV = 5; // navio vertical se posicina na linha 3 e coluna 6
     int linhaD1 = 7, colunaD1 = 7; // navio diagonal para cima se posiciona na linha 8 e coluna 8
     int linhaD2 = 6, colunaD2 = 0; // navio diagonal para baixo se posiciona na linha 7 e coluna 1
+    // Origem da máscara do cone (centro da máscara 5x5). Ajuste para posicionar o cone no tabuleiro.
+    int linhaCone = 3, colunaCone = 3; // centraliza a máscara 5x5 em (3,3)
 
     // validar se as coordenadas e o tamanho dos 4 navios são válidos
     // verificação do navio horizontal (se posição + tamanho do navio é maior que tamanho do tabuleiro?)
@@ -151,16 +153,29 @@ int main(void) {
     }
 
     // Posicionar as matrizes de habilidade no tabuleiro para visualização
+    // Incluir verificação dos limites do tabuleiro e evitar sobreposição com os navios
     for (int i = 0; i < TAM_HABILIDADE; i++) {
         for (int j = 0; j < TAM_HABILIDADE; j++) {
             if (habilidade_cone[i][j] == 1) {
-                tabuleiro[i][j] = 5; // Usar valor 5 para representar área de efeito do cone
+                int lt = linhaCone + (i - 2); // Ajustar a linha usando a origem do cone
+                int cl = colunaCone + (j - 2); // Ajustar a coluna usando a origem do cone
+                if (dentroLimite(lt, cl) && tabuleiro[lt][cl] == 0) { // Verificar se a posição está dentro dos limites do tabuleiro e não sobrepõe um navio
+                    tabuleiro[lt][cl] = 2; // Representa área de efeito do cone
+                }
             }
             if (habilidade_cruz[i][j] == 1) {
-                tabuleiro[i][j] = 5; // Usar valor 5 para representar área de efeito da cruz
+                int lt = linhaV + (i - 2); // Ajustar a linha para posicionar a cruz em torno do navio vertical
+                int cl = colunaV + (j - 2); // Ajustar a coluna para posicionar a cruz em torno do navio vertical
+                if (dentroLimite(lt, cl) && tabuleiro[lt][cl] == 0) { // Verificar se a posição está dentro dos limites do tabuleiro e não sobrepõe um navio
+                    tabuleiro[lt][cl] = 4; // Usar valor 4 para representar área de efeito da cruz
+                }
             }
             if (habilidade_octaedro[i][j] == 1) {
-                tabuleiro[i][j] = 5; // Usar valor 5 para representar área de efeito do octaedro
+                int lt = linhaD1 + (i - 2); // Ajustar a linha para posicionar o octaedro em torno do navio diagonal para cima
+                int cl = colunaD1 + (j - 2); // Ajustar a coluna para posicionar o octaedro em torno do navio diagonal para cima
+                if (dentroLimite(lt, cl) && tabuleiro[lt][cl] == 0) { // Verificar se a posição está dentro dos limites do tabuleiro e não sobrepõe um navio
+                    tabuleiro[lt][cl] = 5; // Usar valor 5 para representar área de efeito do octaedro
+                }
             }
         }
     }
